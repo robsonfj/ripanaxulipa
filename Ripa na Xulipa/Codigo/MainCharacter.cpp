@@ -58,7 +58,8 @@ void MainCharacter::Update(float dt) {
 	}
 	else{
 		if (box.y < minPos) {
-			box.y += 800* Game::GetInstance().GetDeltaTime();		}
+			box.y += 800* Game::GetInstance().GetDeltaTime();
+        }
         else{
 			box.y = minPos;
             sp.SetScaleX(3);
