@@ -3,11 +3,14 @@
 #include "State.h"
 #include "Game.h"
 
+int State::deletedpapercount;
+
 State::State(){
 	requestDelete = false;
 	requestQuit = false;
 	padraoCorSelect.r = padraoCorSelect.g = padraoCorSelect.b = 150;
 	padraoCor.r = padraoCor.g = padraoCor.b = 50;
+    deletedpapercount = 0;
 }
 
 void State::UpdateArray(float dt){
@@ -29,13 +32,14 @@ void State::UpdateArray(float dt){
 		objectArray[i]->Update(dt);
 		
 //  	se retorna true ele deleta o objeto do array
-		if (objectArray[i]->IsDead()){
-			
-			objectArray.erase(objectArray.begin() + i);
-			i--;
-		}
-	}
-	
+        if (objectArray[i]->IsDead()){
+            if (objectArray[i]->Is("paper"))
+                deletedpapercount += 1;
+            
+            objectArray.erase(objectArray.begin() + i);
+            i--;
+        }
+    }
 }
 
 void State::RenderArray(){

@@ -2,6 +2,7 @@
 #include "StageState.h"
 
 
+
 StageState::StageState(): road("arquivos/img/road2.jpg", 200), mainMusic("arquivos/audio/El corridon com piano leve.mp3"){
 
     bg = *new Sprite("arquivos/img/Fundo/fundo.png");
@@ -12,7 +13,6 @@ StageState::StageState(): road("arquivos/img/road2.jpg", 200), mainMusic("arquiv
         nuvens.emplace_back(new Nuvem(temp[rand()% 6], 0));
         
 	paper = *new Sprite("arquivos/img/paper.png");
-
 	txpapers = *new Text(FONTE, 40, Text::TEXT_BLENDED, " 0", padraoCor, 200, 50);
     txpoints = *new Text(FONTE, 40, Text::TEXT_BLENDED," 0 ", padraoCor, 300, 50);
 	txPause = *new Text(FONTE, 40, Text::TEXT_BLENDED," || ", padraoCor, 100, 50);
@@ -63,7 +63,6 @@ void StageState::Update(float dt){
 	
 	if(pause.paused == false){
 		
-		time.Update(dt);
 		Input();
 		road.Update(dt);
 //		perpadraoCorre o array de objetos
@@ -86,8 +85,7 @@ void StageState::Update(float dt){
             nuvens[i]->Update(dt);
         
 //      se o tempo da fase acabar
-        printf("\n%f\n", time.Get());
-        if (time.Get() > 120) {
+        if (deletedpapercount >= 60) {
             FILE *fp;
             fp = fopen("arquivos/save/score.txt", "w");
             MainCharacter::plstrpoints += Game::GetInstance().GetCoins();

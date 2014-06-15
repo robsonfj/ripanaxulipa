@@ -52,6 +52,7 @@ public:
 	State* nextState = NULL;
 	State* previousState = NULL;
 	std::vector<Resultado> resultados;
+    static int deletedpapercount;
 
 };
 #endif /* defined(__IDJ__State__) */

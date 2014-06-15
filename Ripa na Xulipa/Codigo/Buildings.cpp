@@ -49,6 +49,8 @@ void Buildings::Render(){
 	float escala = box1.w/box2.w;
 
 	glBindTexture(GL_TEXTURE_2D, sp1.GetTexture());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+    
 	glBegin(GL_QUADS);
 //	ponto superior esquerdo
 	glTexCoord4f(0, 0, 0, 1);

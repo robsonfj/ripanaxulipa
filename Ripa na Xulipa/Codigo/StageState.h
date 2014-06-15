@@ -25,7 +25,6 @@ class StageState: public State{
 	Text txpoints, txPause, txpapers;
 	Music mainMusic;
 	PauseState pause;
-	Timer time;
 	std::vector<Nuvem*> nuvens;
     
 public:

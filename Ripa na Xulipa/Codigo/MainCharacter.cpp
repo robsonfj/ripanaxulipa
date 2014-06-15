@@ -90,6 +90,11 @@ void MainCharacter::NotifyCollision (GameObject& other){
 		papers += 1;
         plpoints += 100;
     }
+    
+    if (other.Is("buraco") && other.actCollision == true) {
+        if (!isjumping)
+            player = NULL;
+    }
 }
 
 bool MainCharacter::Is(string type){

@@ -11,7 +11,7 @@
 
 Nuvem::Nuvem(float x, float y){
     
-    s<<"arquivos/img/Fundo/Nuvem_"<<std::to_string(1+rand()%5)<<".png";
+    s<<"arquivos/img/Fundo/Nuvem_"<<(1+rand()%5)<<".png";
     sp = *new Sprite(s.str());
     
     scale = (3+rand()% 8);

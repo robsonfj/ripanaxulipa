@@ -23,7 +23,7 @@ void Objetos::Update(float dt) {
 	spObj.SetScaleY(scale * seg->GetScreenRect1().w/Game::GetInstance().GetWindowHeight()/2);
 
 	box.x = seg->GetScreenRect1().x - spObj.GetWidth()/2 + seg->GetScreenRect1().w*pos.x;
-	box.y = seg->GetScreenRect1().y - spObj.GetHeight() + pos.y;
+	box.y = seg->GetScreenRect1().y - spObj.GetHeight() * pos.y;
 	box.w = spObj.GetWidth();
 	box.h = spObj.GetHeight();
 	
