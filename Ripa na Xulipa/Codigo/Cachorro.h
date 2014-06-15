@@ -18,7 +18,7 @@
 class Cachorro: public GameObject{
     Sprite sp;
     float scale;
-    int i = 4;
+    int i = 3;
     Timer timer;
     
 public:

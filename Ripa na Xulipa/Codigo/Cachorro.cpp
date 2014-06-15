@@ -8,7 +8,7 @@
 
 #include "Cachorro.h"
 
-Cachorro::Cachorro(float x, float y, float scale): sp("arquivos/img/spritecachorro.png", 6, 60){
+Cachorro::Cachorro(float x, float y, float scale): sp("arquivos/img/spritecachorro.png", 6, 100){
     
     this->scale = scale;
     box.x = x - sp.GetWidth()/2;
@@ -23,8 +23,8 @@ void Cachorro::Update(float dt) {
         i++;
         timer.Restart();
     }
-    sp.SetScaleX(scale * 1/i);
-    sp.SetScaleY(scale * 1/i);
+    sp.SetScaleX(scale/i);
+    sp.SetScaleY(scale/i);
     
     box.x = Road::segmentos[i]->GetScreenRect1().x - sp.GetWidth() + Road::segmentos[i]->GetScreenRect1().w * 0.8;
     box.y = Road::segmentos[i]->GetScreenRect1().y;

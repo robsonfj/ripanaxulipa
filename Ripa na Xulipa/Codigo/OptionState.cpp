@@ -28,7 +28,7 @@ void OptionState::Input(){
 	if(InputManager::GetInstance().ShouldQuit())
 		requestQuit = true;
 	
-//	mudar a Cor do texto e se ele for clicado entra na tela correspondente
+//	mudar a Cor do texto e se ele for clicado seta o mute
 	if (InputManager::GetInstance().IsMouseInside(txMute.box)) {
 		
 		txMute.SetColor(padraoCorSelect);
@@ -43,7 +43,7 @@ void OptionState::Input(){
 			txMute.SetColor(padraoCor);
 	}
 	
-//	mudar a Cor do texto e se ele for clicado entra na tela correspondente
+//	mudar a Cor do texto e se ele for clicado aumenta o volume
 	if (InputManager::GetInstance().IsMouseInside(txPlus.box)) {
 		
 		txPlus.SetColor(padraoCorSelect);
@@ -55,7 +55,7 @@ void OptionState::Input(){
 	else
 		txPlus.SetColor(padraoCor);
 	
-//	mudar a Cor do texto e se ele for clicado entra na tela correspondente
+//	mudar a Cor do texto e se ele for clicado diminue o volume
 	if (InputManager::GetInstance().IsMouseInside(txMinus.box)) {
 		
 		txMinus.SetColor(padraoCorSelect);
@@ -67,7 +67,7 @@ void OptionState::Input(){
 	else
 		txMinus.SetColor(padraoCor);
 	
-	//	mudar a Cor do texto e se ele for clicado entra na tela correspondente
+//	mudar a Cor do texto e se ele for clicado entra na tela correspondente
 	if (InputManager::GetInstance().IsMouseInside(txReset.box)) {
 
 		txReset.SetColor(padraoCorSelect);
@@ -80,7 +80,7 @@ void OptionState::Input(){
 	else
 		txReset.SetColor(padraoCor);
 	
-//	mudar a Cor do texto e se ele for clicado entra na tela correspondente
+//	mudar a Cor do texto e se ele for clicado retorna a tela anterior
 	if (InputManager::GetInstance().IsMouseInside(txBack.box)) {
 		
 		txBack.SetColor(padraoCorSelect);

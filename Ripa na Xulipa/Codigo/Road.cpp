@@ -139,24 +139,24 @@ void Road::AddObstacles(){
     }
     
     if (papercount < 60) {
-     Game::GetCurrentState().AddObject(new Objetos("paper", "arquivos/img/obstacles/paper.png", segcount/2, xpos[randpos[2]], 0, 1));
+     Game::GetCurrentState().AddObject(new Objetos("paper", "arquivos/img/obstacles/paper.png", segcount/2, xpos[randpos[0]], 0, 1));
         papercount ++;
     }
     
 //     construcao aleatoria de objetos
-    switch (0/*rand()%3*/) {
+    switch (2/*rand()%3*/) {
         case 0:
-            Game::GetCurrentState().AddObject(new Objetos("obstaculo", "arquivos/img/obstacles/workerstop.png", randseg[randpos[0]]*segcount/2, xpos[randpos[0]], 0, 0.25));
-            Game::GetCurrentState().AddObject(new Objetos("obstaculo", "arquivos/img/obstacles/workerstop.png", randseg[randpos[1]]*segcount/2, xpos[randpos[1]], 0, 0.25));
+            Game::GetCurrentState().AddObject(new Objetos("obstaculo", "arquivos/img/obstacles/workerstop.png", (-rand()%5)+segcount/2, xpos[randpos[1]], 0, 0.25));
+            Game::GetCurrentState().AddObject(new Objetos("obstaculo", "arquivos/img/obstacles/workerstop.png", (rand()%5)+segcount/2, xpos[randpos[2]], 0, 0.25));
             break;
             
         case 1:
-            Game::GetCurrentState().AddObject(new ObjPespectiva("arquivos/img/obstacles/hole.png", 10, xpos[1], 0, 1));
+            Game::GetCurrentState().AddObject(new ObjPespectiva("arquivos/img/obstacles/hole.png", 10, xpos[1], 1, 1));
             
             break;
             
         case 2:
-            Game::GetCurrentState().AddObject(new ObjPespectiva("arquivos/img/obstacles/sewage.png", 10, xpos[1], 0.5, 0.5));
+            Game::GetCurrentState().AddObject(new ObjPespectiva("arquivos/img/obstacles/sewage.png", 10, xpos[1], 1, 0.8));
             break;
             
         case 3:

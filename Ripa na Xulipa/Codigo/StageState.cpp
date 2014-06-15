@@ -91,11 +91,7 @@ void StageState::Update(float dt){
             FILE *fp;
             fp = fopen("arquivos/save/score.txt", "w");
             MainCharacter::plstrpoints += Game::GetInstance().GetCoins();
-            if(Game::GetInstance().GetHighScore() < MainCharacter::plpoints)
-                fprintf(fp, "%d %d\n", MainCharacter::plstrpoints, MainCharacter::plpoints);
-            else
-                fprintf(fp, "%d", MainCharacter::plstrpoints);
-            
+            fprintf(fp, "%d %d\n", MainCharacter::plstrpoints, MainCharacter::plpoints);
             fclose(fp);
             requestDelete = true;
             mainMusic.Stop();

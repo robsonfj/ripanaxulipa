@@ -142,3 +142,12 @@ bool Sprite::IsOpen(){
 	
 	return false;
 }
+
+bool Sprite::IsTransparent(){
+    
+    if (alpha < 1)
+        return true;
+    
+    return false;
+    
+}

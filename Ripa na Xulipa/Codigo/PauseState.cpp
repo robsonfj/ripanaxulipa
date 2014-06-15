@@ -69,6 +69,18 @@ void PauseState::Input(){
 	}
 	else
 		txExit.SetColor(padraoCor);
+    
+    
+//    entra em cheat mode
+    if (InputManager::GetInstance().IsKeyDown(SDLK_LCTRL)){
+        if (InputManager::GetInstance().IsKeyDown(SDLK_c)) {
+//          se ctrl + C for precionado entra em cheatmode
+            string cheat;
+            std::cin>>cheat;
+            cheats.SetCheat(cheat);
+        }
+    }
+    
 	
 }
 
@@ -77,6 +89,8 @@ void PauseState::Update(float dt) {
 		music.Play(-1);
 	}
 	Input();
+    
+    cheats.Update();
 	
 }
 

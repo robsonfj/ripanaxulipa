@@ -82,10 +82,11 @@ bool MainCharacter::IsDead(){
 void MainCharacter::NotifyCollision (GameObject& other){
 
 	if (other.Is("obstaculo") && other.actCollision == true) {
-		player = NULL;
+        if (!sp.IsTransparent())
+            player = NULL;
 	}
     
-	if (other.Is("paper")) {
+	if (other.Is("paper") && other.actCollision == true) {
 		papers += 1;
         plpoints += 100;
     }
@@ -98,3 +99,5 @@ bool MainCharacter::Is(string type){
 	
 	return false;
 }
+
+

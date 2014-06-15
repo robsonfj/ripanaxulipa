@@ -23,6 +23,7 @@ public:
     static int plpoints;//pontos do jogador (papeis coletados)
     static int plstrpoints;//pontos para a loja (materiais escolares)
 	static MainCharacter *player;
+    void SetIntang(float alpha){sp.SetAlpha(alpha);};
 	void Update(float dt);
 	void Render();
 	bool IsDead();

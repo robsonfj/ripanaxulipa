@@ -13,8 +13,8 @@ ObjPespectiva::ObjPespectiva(string file, int segpos, float x, float y, float sc
     this->scale = scale;
     this->seg = Road::segmentos[segpos];
     
-    sp.SetScaleX(scale * seg->GetScreenRect1().w/Game::GetInstance().GetWindowHeight()/2);
-    sp.SetScaleY(scale * seg->GetScreenRect1().w/Game::GetInstance().GetWindowHeight()/2);
+    sp.SetScaleX(scale/(seg->GetZ_World1()));
+    sp.SetScaleY(scale/(seg->GetZ_World1()));
     box.x = pos.x = x;
     box.y = pos.y = y;
     box.w = sp.GetWidth();
@@ -24,19 +24,19 @@ ObjPespectiva::ObjPespectiva(string file, int segpos, float x, float y, float sc
 
 void ObjPespectiva::Update(float dt) {
     
-    sp.SetScaleX(scale * seg->GetScreenRect1().w/Game::GetInstance().GetWindowHeight()/2);
-    sp.SetScaleY(scale * seg->GetScreenRect1().w/Game::GetInstance().GetWindowHeight()/2);
+    sp.SetScaleX(scale/(seg->GetZ_World1()));
+    sp.SetScaleY(scale/(seg->GetZ_World1()));
     
     box.x = seg->GetScreenRect1().x - sp.GetWidth() + seg->GetScreenRect1().w*pos.x;
     box.y = seg->GetScreenRect1().y - sp.GetHeight() +pos.y;
     box.w = sp.GetWidth();
     box.h = sp.GetHeight();
     
-    sp.SetScaleX(scale * seg->GetScreenRect2().w/Game::GetInstance().GetWindowHeight()/2);
-    sp.SetScaleY(scale * seg->GetScreenRect2().w/Game::GetInstance().GetWindowHeight()/2);
+    sp.SetScaleX(scale/(seg->GetZ_World2()));
+    sp.SetScaleY(scale/(seg->GetZ_World2()));
     
     box2.x = seg->GetScreenRect2().x - sp.GetWidth() + seg->GetScreenRect2().w*pos.x;
-    box2.y = seg->GetScreenRect2().y - sp.GetHeight() +seg->GetScreenRect2().w*pos.y;
+    box2.y = seg->GetScreenRect2().y - sp.GetHeight()/2 +pos.y;
     box2.w = sp.GetWidth();
     box2.h = sp.GetHeight();
     
@@ -53,14 +53,13 @@ void ObjPespectiva::Render(){
     float escala = seg->GetScreenRect2().w/seg->GetScreenRect1().w;
     
     glBindTexture(GL_TEXTURE_2D, sp.GetTexture());
-    
     glBegin(GL_QUADS);
 //	ponto superior esquerdo
-    glTexCoord4f(0, 0, 0, escala);
+    glTexCoord4f(0, 0.5, 0, escala);
     glVertex2f(box2.x, box2.y);
     
 //	ponto superior direito
-    glTexCoord4f(escala, 0, 0, escala);
+    glTexCoord4f(escala, 0.5, 0, escala);
     glVertex2f( box2.x + box2.w, box2.y);
     
 //	ponto inferior direito

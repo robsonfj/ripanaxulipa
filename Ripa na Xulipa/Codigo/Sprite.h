@@ -46,6 +46,7 @@ public:
 	void SetScaleX (float scale){scaleX = scale;};
 	void SetScaleY (float scale){scaleY = scale;};
     void SetAlpha(float alpha){this->alpha = alpha;};
+    bool IsTransparent();
 };
 
 #endif /* defined(__IDJ__Sprite__) */

@@ -7,12 +7,14 @@
 #include "Music.h"
 #include "Timer.h"
 #include "ColorRect.h"
+#include "CheatMode.h"
 
 class PauseState: public State {
 	int nrtxtselected = -1;
 	void Input();
 	Music music;
     ColorRect rectWhite;
+    CheatMode cheats;
 	
 public:
 	Text txContinue, txExit , txOptions;
