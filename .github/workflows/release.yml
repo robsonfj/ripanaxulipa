@@ -1,0 +1,85 @@
+# Release: ao criar tag v* (ex v1.0.0), compila Release nos 3 SOs,
+# empacota (exe+dlls+assets no Windows; binario+assets no Linux/macOS)
+# e publica no GitHub Release com os artefatos.
+#
+# Criar release: git tag v1.0.0 && git push origin v1.0.0
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            pkg: RipaNaXulipa-linux-x64.tar.gz
+          - os: windows-2022
+            pkg: RipaNaXulipa-windows-x64.zip
+          - os: macos-14
+            pkg: RipaNaXulipa-macos-arm64.tar.gz
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependencias (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake libgl1-mesa-dev \
+            libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \
+            xvfb
+
+      - name: Dependencias (macOS)
+        if: runner.os == 'macOS'
+        run: brew install sdl2 sdl2_image sdl2_mixer sdl2_ttf
+
+      - name: Configurar (Unix)
+        if: runner.os != 'Windows'
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        env:
+          CMAKE_PREFIX_PATH: /opt/homebrew
+
+      - name: Configurar (Windows, sem vcpkg)
+        if: runner.os == 'Windows'
+        run: cmake -S . -B build
+
+      - name: Compilar
+        run: cmake --build build --config Release -j
+
+      - name: Testar antes de empacotar (Linux)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a ctest --test-dir build -C Release --output-on-failure
+
+      - name: Testar antes de empacotar (Windows/macOS)
+        if: runner.os != 'Linux'
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Empacotar (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Copy-Item README.md build/Release/
+          Compress-Archive -Path build/Release/RipaNaXulipa.exe,
+            build/Release/*.dll, build/Release/arquivos, build/Release/README.md `
+            -DestinationPath ${{ matrix.pkg }}
+
+      - name: Empacotar (Unix)
+        if: runner.os != 'Windows'
+        shell: pwsh
+        run: |
+          Copy-Item README.md build/
+          tar czf ${{ matrix.pkg }} -C build RipaNaXulipa arquivos README.md
+
+      - name: Publicar Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.pkg }}
+          generate_release_notes: true

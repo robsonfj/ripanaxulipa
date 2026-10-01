@@ -1,0 +1,77 @@
+# CI: compila + testa em Linux/Windows/macOS a cada push/PR.
+#
+# Dependencias (sem vcpkg):
+#  - Linux: apt (versoes do sistema, CMake encontra via find_package).
+#  - macOS: brew (CMAKE_PREFIX_PATH aponta p/ /opt/homebrew).
+#  - Windows: nada a instalar — o cmake/Dependencies.cmake baixa os
+#    pacotes -devel oficiais e usa direto (validado a cada push!).
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022, macos-14]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependencias (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake libgl1-mesa-dev \
+            libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \
+            lcov xvfb
+
+      - name: Dependencias (macOS)
+        if: runner.os == 'macOS'
+        run: brew install sdl2 sdl2_image sdl2_mixer sdl2_ttf
+
+      - name: Configurar (Unix)
+        if: runner.os != 'Windows'
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        env:
+          CMAKE_PREFIX_PATH: /opt/homebrew
+
+      - name: Configurar (Windows, sem vcpkg)
+        if: runner.os == 'Windows'
+        run: cmake -S . -B build
+
+      - name: Compilar
+        run: cmake --build build --config Release -j
+
+      - name: Testar (Linux, com display virtual p/ GL)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a ctest --test-dir build -C Release --output-on-failure
+
+      - name: Testar (Windows/macOS)
+        if: runner.os != 'Linux'
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Cobertura (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          cmake -S . -B build-cov -DCMAKE_BUILD_TYPE=Debug -DRIPA_COVERAGE=ON
+          cmake --build build-cov -j
+          xvfb-run -a ctest --test-dir build-cov --output-on-failure
+          lcov --capture --directory build-cov --output-file coverage.info \
+            --ignore-errors mismatch --rc branch_coverage=1
+          lcov --remove coverage.info '/usr/*' '*/tests/*' '*/_deps/*' '*/build-cov/*' \
+            --output-file coverage.info --ignore-errors unused
+          lcov --list coverage.info
+          mkdir -p coverage-html
+          genhtml coverage.info --output-directory coverage-html \
+            --ignore-errors unmapped,unused
+
+      - name: Publicar cobertura
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: coverage-html
