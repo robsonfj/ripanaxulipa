@@ -91,24 +91,23 @@ void Sprite::Open(string file) {
             glBindTexture(GL_TEXTURE_2D, *texturegl);
 
             // NOTA (verificado empiricamente no SDL_image 2.8):
-            // - PNG  -> bytes R,G,B,A (mascaras ok).
-            // - JPG  -> rotulado ARGB8888 mas bytes em ordem R,G,B,A
-            //          (mascaras R/B trocadas no loader). Nao confiar nas
-            //          mascaras: converter via SDL_ConvertSurfaceFormat
-            //          QUEBRA o JPG. Sobe os bytes direto como RGB/RGBA.
-            int modo = GL_RGB;
-            if (surface->format->BytesPerPixel == 4) {
-                modo = GL_RGBA;
-            }
-            else if (surface->format->BytesPerPixel != 3) {
-                // Paletizado (8-bit) etc: ai sim converte, via paleta (seguro).
+            // - PNG 4 bytes -> bytes R,G,B,A (mascaras ok).
+            // - JPG 4 bytes  -> rotulado ARGB8888 mas bytes em ordem R,G,B,A
+            //          (mascaras R/B trocadas no loader). Nao converter com
+            //          base nas mascaras: QUEBRA o JPG.
+            // - 3 bytes/paletizado -> converte para ABGR8888 (mascaras RGB
+            //          provadas corretas + paleta segura).
+            // Sobe-se TUDO como RGBA: e o unico caminho que funciona ate
+            // no GDI Generic 1.1 (o RGB puro trava o driver la).
+            if (surface->format->BytesPerPixel != 4) {
                 SDL_Surface* conv = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_ABGR8888, 0);
                 if (conv) {
                     SDL_FreeSurface(surface);
                     surface = conv;
-                    modo = GL_RGBA;
                 }
             }
+            // Formato coerente com os bytes reais (pos-conversao).
+            int modo = (surface->format->BytesPerPixel == 3) ? GL_RGB : GL_RGBA;
 
 //          Parametros de filtragem da textura (GL 1.x em todo lugar).
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

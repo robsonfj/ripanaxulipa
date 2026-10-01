@@ -17,6 +17,7 @@
 #include "minitest.h"
 #include "InputManager.h"
 #include "Rect.h"
+#include <cstdio>
 
 static InputManager& IM() { return InputManager::GetInstance(); }
 static bool g_video_ok = false;
@@ -139,23 +140,38 @@ TEST(Input, MouseInsideOrigem) {
     EXPECT_FALSE(IM().IsMouseInside(Rect(10, 10, 100, 100)));
 }
 
+TEST(Input, TextoAcumulaDireto) {
+    // Mesmo contrato do cheat mode (acumula + Text() consome e limpa),
+    // mas sem passar pela fila SDL: vale em qualquer plataforma.
+    // (inputTexto e publico de proposito para isso.)
+    IM().inputTexto.str("");
+    IM().inputTexto << "klap";
+    IM().inputTexto << "aucius";
+    std::string got = IM().Text();
+    EXPECT_STREQ(got.c_str(), "klapaucius");
+    EXPECT_STREQ(IM().Text().c_str(), "");
+}
+
 TEST(Input, TextoAcumulaELimpa) {
     NEED_VIDEO();
     SDL_Event e;
     SDL_memset(&e, 0, sizeof(e));
     e.type = SDL_TEXTINPUT;
     SDL_strlcpy(e.text.text, "ab", sizeof(e.text.text));
+    std::fprintf(stderr, "    [dbg] antes-push\n");
+    std::fflush(stderr);
     int pushed = SDL_PushEvent(&e);
-    std::cout << "    (push=" << pushed << ")" << std::endl;
+    std::fprintf(stderr, "    [dbg] push=%d\n", pushed);
+    std::fflush(stderr);
     if (pushed <= 0) {
         std::cout << "    (SDL_PushEvent recusou TEXTINPUT)\n";
         return;
     }
     Pump();
-    std::cout << "    (pump ok)" << std::endl;
+    std::fprintf(stderr, "    [dbg] pump ok\n");
+    std::fflush(stderr);
     // Captura em variavel local: cada Text() consome (limpa) o buffer.
     std::string primeira = IM().Text();
-    std::cout << "    (lido [" << primeira.size() << " chars])" << std::endl;
     EXPECT_STREQ(primeira.c_str(), "ab");
     std::string segunda = IM().Text();
     EXPECT_STREQ(segunda.c_str(), "");
