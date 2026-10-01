@@ -73,7 +73,7 @@ inline unsigned char* RipaPreparePixels(SDL_Surface* s, int& outW, int& outH,
     vScale = (float)h / (float)ph;
     outW = pw;
     outH = ph;
-    if (pw == w && s->pitch == w * bpp) {
+    if (pw == w && ph == h && s->pitch == w * bpp) {
         return nullptr;  // ja justo: sobe direto, sem copia
     }
     unsigned char* buf = new unsigned char[(size_t)pw * ph * bpp]();

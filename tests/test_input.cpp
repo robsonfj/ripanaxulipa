@@ -19,6 +19,7 @@
 #include "Rect.h"
 
 static InputManager& IM() { return InputManager::GetInstance(); }
+static bool g_video_ok = false;
 
 // Bombeia a fila uma vez (igual ao Game::Run faz por frame).
 static void Pump() { IM().Update(); }
@@ -53,10 +54,22 @@ static void PushMotion(int x, int y) {
 
 TEST(Input, VideoDummySobe) {
     SDL_setenv("SDL_VIDEODRIVER", "dummy", 1);
-    EXPECT_EQ(SDL_Init(SDL_INIT_VIDEO), 0);
+    g_video_ok = (SDL_Init(SDL_INIT_VIDEO) == 0);
+    EXPECT_TRUE(g_video_ok);
 }
 
+// Pula o caso (sem falhar) quando o video nao subiu: sem SDL de video
+// nao ha fila de eventos e forcar ia crashar em vez de testar.
+#define NEED_VIDEO()                                       \
+    do {                                                   \
+        if (!g_video_ok) {                                 \
+            std::cout << "    (SKIP sem video)\n";          \
+            return;                                        \
+        }                                                  \
+    } while (0)
+
 TEST(Input, CicloTecla) {
+    NEED_VIDEO();
     // DOWN: so KeyPress; outro pump sem evento: vira IsKeyDown.
     PushKey(SDL_KEYDOWN, SDLK_F1);
     Pump();
@@ -75,6 +88,7 @@ TEST(Input, CicloTecla) {
 }
 
 TEST(Input, KeyUpSemKeyDownNaoCrasha) {
+    NEED_VIDEO();
     // Regressao P0-2: KEYUP orfao (Alt-Tab etc.) desreferenciava end().
     PushKey(SDL_KEYUP, SDLK_F2);
     Pump();  // nao pode crashar
@@ -82,6 +96,7 @@ TEST(Input, KeyUpSemKeyDownNaoCrasha) {
 }
 
 TEST(Input, TeclasIndependentes) {
+    NEED_VIDEO();
     PushKey(SDL_KEYDOWN, SDLK_F3);
     Pump();
     EXPECT_TRUE(IM().KeyPress(SDLK_F3));
@@ -92,6 +107,7 @@ TEST(Input, TeclasIndependentes) {
 }
 
 TEST(Input, CicloBotaoMouse) {
+    NEED_VIDEO();
     PushMouseButton(SDL_MOUSEBUTTONDOWN, SDL_BUTTON_LEFT);
     Pump();
     EXPECT_TRUE(IM().MousePress(SDL_BUTTON_LEFT));
@@ -103,6 +119,7 @@ TEST(Input, CicloBotaoMouse) {
 }
 
 TEST(Input, DebounceJitter) {
+    NEED_VIDEO();
     // Jitter de <=2px nao e "movimento" (nao desliga teclado dos menus).
     PushMotion(0, 0);
     Pump();
@@ -116,12 +133,14 @@ TEST(Input, DebounceJitter) {
 }
 
 TEST(Input, MouseInsideOrigem) {
+    NEED_VIDEO();
     Pump();  // dummy video: cursor em (0,0)
     EXPECT_TRUE(IM().IsMouseInside(Rect(0, 0, 1024, 600)));
     EXPECT_FALSE(IM().IsMouseInside(Rect(10, 10, 100, 100)));
 }
 
 TEST(Input, TextoAcumulaELimpa) {
+    NEED_VIDEO();
     SDL_Event e;
     SDL_memset(&e, 0, sizeof(e));
     e.type = SDL_TEXTINPUT;
