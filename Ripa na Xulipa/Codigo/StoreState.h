@@ -1,9 +1,11 @@
 
-
 #ifndef __Avenida_Paulista__StoreState__
 #define __Avenida_Paulista__StoreState__
-#include <string.h>
+
+#include <cstring>
+#include <string>
 #include <memory>
+#include <cstdio>
 
 #include "State.h"
 #include "Sprite.h"
@@ -13,26 +15,34 @@
 #include "StoreItem.h"
 #include "Money.h"
 #include "MessageWindow.h"
+#include "Sound.h"
+#include "Music.h"
 
+class StoreState : public State {
 
-class StoreState: public State{
-	void Input();
-	Sprite bg;
+private:
+    int nrtxtselected = 0;
+    FILE *fp;
+	Sprite bg, bg2, title;
 	Text txBack;
-    ColorRect rectRed;
 	Money money;
+    Music storeMusic;
+    Sound coinFX;
 	int numItens;
 	std::vector<StoreItem*> itens;
+
+	void Input();
 	void BuyItem(int item, int nivel);	
 	void CanBuy(int item);
 	void NoMoney(int item);
 	void MaxUpgrade(int item);
-	int VerifyLevel(int item);
 	void ManageItems();
-	FILE *fp;
+	
 public:
 	StoreState();
 	~StoreState();
+
+	static int VerifyLevel(int item);
 	void Update(float dt);
 	void Render();
 	Resultado result;

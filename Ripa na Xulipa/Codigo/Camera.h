@@ -5,13 +5,15 @@
 #include "GameObject.h"
 #include "InputManager.h"
 
-class Camera{
+class Camera {
+
+private:
 	static GameObject* focus;
 	
 public:
 	static Point pos;
 	static float speed;
-	static void Follow(GameObject *newFocus){focus = newFocus;};
+	static void Follow(GameObject *newFocus) { focus = newFocus; };
 	static void Unfollow();
 	static void Update (float dt);
 	

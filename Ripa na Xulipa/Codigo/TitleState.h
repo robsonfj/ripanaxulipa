@@ -2,22 +2,25 @@
 #ifndef __IDJ__TitleState__
 #define __IDJ__TitleState__
 
-#include "StageState.h"
+#include "LoadState.h"
 #include "OptionState.h"
 #include "StoreState.h"
+#include "RankingState.h"
+#include "Credits.h"
 #include "Text.h"
 #include "Music.h"
 #include "Timer.h"
 #include "ColorRect.h"
 
+class TitleState : public State {
 
-class TitleState: public State{
-	int nrtxtselected = -1;
-	void Input();
-	Sprite bg;
+private:
+	int nrtxtselected = 0;
+	Sprite bg, bg2;
 	Music music;
-    ColorRect rectRed, rectorange;
-	Text txPlay, txOptions, txStore, txExit;
+	Text txPlay, txOptions, txStore, txRanking, txExit, txCredits;
+
+	void Input();
 	
 public:
 	TitleState();

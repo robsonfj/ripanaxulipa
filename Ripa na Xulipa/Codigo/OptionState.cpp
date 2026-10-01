@@ -2,134 +2,188 @@
 #include "OptionState.h"
 #include "Game.h"
 
-OptionState::OptionState(): music("arquivos/audio/El corridon com piano pesado.mp3"){
-	
-//    retangulo vermelho
-	rectRed = *new ColorRect(0, 0, 1024, 600);
-//    retangulo laranja
-	rectOrange = *new ColorRect(300, 180, 424, 320);
-    
-	txMute = *new Text(FONTE, 50, Text::TEXT_BLENDED,"MUTE", padraoCor, 512, 250);
-	txMinus = *new Text(FONTE, 80, Text::TEXT_BLENDED,"-", padraoCor, 450, 350);
-	txPlus = *new Text(FONTE, 80, Text::TEXT_BLENDED,"+", padraoCor, 570, 350);
-	txVolume = *new Text(FONTE, 50, Text::TEXT_BLENDED,std::to_string(Game::GetInstance().volume), padraoCor, 512, 350);
-	txReset = *new Text(FONTE, 50, Text::TEXT_BLENDED, "RESET", padraoCor, 512, 450);
-	txBack = *new Text(FONTE, 50, Text::TEXT_BLENDED,"BACK", padraoCor, 80, 50);
+static std::string IntroLabel() {
+
+	if (Game::GetInstance().skipIntro) {
+		return "INTRO: OFF";
+	}
+	return "INTRO: ON";
+
 }
 
-void OptionState::Input(){
-	
-//  Se a tecla for ESC, setar a flag para deletar esse estado
-	if((InputManager::GetInstance().KeyPress(ESCAPE_KEY))){
+OptionState::OptionState() : music("arquivos/audio/titlemusic.mp3"), bg("arquivos/img/states/Pattern.jpg"), bg2("arquivos/img/states/options/optionsbg.png"){
+    
+	txMute = *new Text(FONTE, 50, Text::TEXT_BLENDED,"MUTE", padraoCor, 512, 200);
+	txMinus = *new Text(FONTE, 80, Text::TEXT_BLENDED,"-", padraoCor, 450, 300);
+	txPlus = *new Text(FONTE, 80, Text::TEXT_BLENDED,"+", padraoCor, 570, 300);
+	txVolume = *new Text(FONTE, 50, Text::TEXT_BLENDED,std::to_string(Game::GetInstance().volume), padraoCor, 512, 300);
+	txReset = *new Text(FONTE, 50, Text::TEXT_BLENDED, "RESET", padraoCor, 512, 400);
+	txBack = *new Text(FONTE, 50, Text::TEXT_BLENDED,"BACK", padraoCor, 80, 50);
+	txIntro = *new Text(FONTE, 50, Text::TEXT_BLENDED, IntroLabel(), padraoCor, 512, 500);
+
+}
+
+
+void OptionState::Input() {
+
+//	Se o cursor estiver se movendo, desabilita selecao pelo teclado
+	if (InputManager::GetInstance().mouseMoving) {
+		nrtxtselected = -1;
+	}
+    
+//	Habilita a selecao das opcoes pelo teclado
+    if (InputManager::GetInstance().KeyPress(UP_ARROW_KEY)) {
+        nrtxtselected -= 1;
+		if (nrtxtselected < 0) {
+			nrtxtselected = 5;
+		}
+    }
+    if (InputManager::GetInstance().KeyPress(DOWN_ARROW_KEY)) {
+        nrtxtselected += 1;
+		if (nrtxtselected > 5) {
+			nrtxtselected = 0;
+		}
+    }
+    
+//  Se a tecla ESC for pressionada, setar a flag para deletar esse estado
+	if ((InputManager::GetInstance().KeyPress(ESCAPE_KEY))) {
 		requestDelete = true;
 	}
 
-//	se condicao de saida for atendido
-	if(InputManager::GetInstance().ShouldQuit())
+//	Se a condicao de saida for atendida
+	if (InputManager::GetInstance().ShouldQuit()) {
 		requestQuit = true;
+	}
 	
-//	mudar a Cor do texto e se ele for clicado seta o mute
-	if (InputManager::GetInstance().IsMouseInside(txMute.box)) {
-		
+    
+//	Verifica se esta selecionado e se foi clicado (volta)
+    if ((InputManager::GetInstance().IsMouseInside(txBack.box)) || (nrtxtselected == 0)) {
+        txBack.SetColor(padraoCorSelect2);
+        if (InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON)|| InputManager::GetInstance().KeyPress(ENTER_KEY)) {
+            requestDelete = true;
+        }
+    }
+	else {
+		txBack.SetColor(padraoCor);
+	}
+    
+    
+//	Verifica se esta selecionado e se foi clicado (seta o mute)
+	if ((InputManager::GetInstance().IsMouseInside(txMute.box)) || (nrtxtselected == 1)) {
 		txMute.SetColor(padraoCorSelect);
-		if(InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON)){
+		if (InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON)|| InputManager::GetInstance().KeyPress(ENTER_KEY)) {
 			Game::GetInstance().SetMute();
 		}
 	}
-	else{
-		if (Game::GetInstance().mute)
+	else {
+		if (Game::GetInstance().mute) {
 			txMute.SetColor(padraoCorSelect);
-		else
+		}
+		else {
 			txMute.SetColor(padraoCor);
+		}
 	}
 	
-//	mudar a Cor do texto e se ele for clicado aumenta o volume
-	if (InputManager::GetInstance().IsMouseInside(txPlus.box)) {
+//	Verifica se esta selecionado e se foi clicado (aumenta o volume)
+	if ((InputManager::GetInstance().IsMouseInside(txPlus.box)) || (nrtxtselected == 2)) {
 		
 		txPlus.SetColor(padraoCorSelect);
-		if(InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON)){
-			if (Game::GetInstance().volume < 100)
+		if (InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON)|| InputManager::GetInstance().KeyPress(ENTER_KEY)) {
+			if (Game::GetInstance().volume < 100) {
 				Game::GetInstance().volume += 10;
+			}
 		}
 	}
-	else
+	else {
 		txPlus.SetColor(padraoCor);
+	}
 	
-//	mudar a Cor do texto e se ele for clicado diminue o volume
-	if (InputManager::GetInstance().IsMouseInside(txMinus.box)) {
-		
+//	Verifica se esta selecionado e se foi clicado (diminui o volume)
+	if ((InputManager::GetInstance().IsMouseInside(txMinus.box)) || (nrtxtselected == 3)) {
 		txMinus.SetColor(padraoCorSelect);
-		if(InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON)){
-			if (Game::GetInstance().volume > 0)
+		if (InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON)|| InputManager::GetInstance().KeyPress(ENTER_KEY)) {
+			if (Game::GetInstance().volume > 0) {
 				Game::GetInstance().volume -= 10;
+			}
 		}
 	}
-	else
+	else {
 		txMinus.SetColor(padraoCor);
+	}
 	
-//	mudar a Cor do texto e se ele for clicado entra na tela correspondente
-	if (InputManager::GetInstance().IsMouseInside(txReset.box)) {
-
+//	Verifica se esta selecionado e se foi clicado (reseta)
+	if ((InputManager::GetInstance().IsMouseInside(txReset.box)) || (nrtxtselected == 4)) {
 		txReset.SetColor(padraoCorSelect);
-		if (InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON)){
-			this->nextState = new MessageWindow(2, "Sua pontuacao e seus itens serao zerados. Tem certeza?");
+		if (InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON)|| InputManager::GetInstance().KeyPress(ENTER_KEY)) {
+			this->nextState = new MessageWindow(2, "Sua pontuação e seus itens serão zerados. Tem certeza?");
 			this->nextState->previousState = this;
 			Game::GetInstance().Push(this->nextState);
 		}
 	}
-	else
+	else {
 		txReset.SetColor(padraoCor);
-	
-//	mudar a Cor do texto e se ele for clicado retorna a tela anterior
-	if (InputManager::GetInstance().IsMouseInside(txBack.box)) {
-		
-		txBack.SetColor(padraoCorSelect);
-		if(InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON)){
-			requestDelete = true;
+	}
+
+//	Verifica se esta selecionado e se foi clicado (liga/desliga a intro da historia)
+	if ((InputManager::GetInstance().IsMouseInside(txIntro.box)) || (nrtxtselected == 5)) {
+		txIntro.SetColor(padraoCorSelect);
+		if (InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON)|| InputManager::GetInstance().KeyPress(ENTER_KEY)) {
+			Game::GetInstance().SetSkipIntro(!Game::GetInstance().skipIntro);
 		}
 	}
-	else
-		txBack.SetColor(padraoCor);
+	else {
+		txIntro.SetColor(padraoCor);
+	}
 	
 }
 
 
 void OptionState::Update(float dt) {
-	
-//	se a musica nao estiver sendo tocada ele coloca para reproduzir novamente
-    if (!music.IsPlaying())
-		music.Play(-1);
 
-// verifica se era pra resetar as pontuacoes e os itens
+//	Se a musica nao estiver sendo tocada, coloca para reproduzir novamente
+	if (!music.IsPlaying()) {
+		music.Play(-1);
+	}
+
+//	Verifica se deve resetar as pontuacoes e os itens
 	if (resultados.size() > 0 && strcmp(resultados.front().descricao, "escolha") == 0) {
 		if (resultados.front().boolValue) {
 			FILE *fp;
-			fp = fopen("arquivos/save/score.txt", "w");
-			fprintf(fp, "0 0\n");
-			fclose(fp);
+			fp = fopen("arquivos/save/coins.txt", "w");
+			if (fp != NULL) {
+				fprintf(fp, "0\n");
+				fclose(fp);
+			}
+			fp = fopen("arquivos/save/highscores.txt", "w");
+			if (fp != NULL) {
+				fclose(fp);
+			}
 			fp = fopen("arquivos/save/storehistory.txt", "w");
-			fprintf(fp, "");
-			fclose(fp);
+			if (fp != NULL) {
+				fclose(fp);
+			}
 		}
 		resultados.clear();
 	}
 
 	Input();
-	
+
 	txVolume.SetText(std::to_string(Game::GetInstance().volume));
+	txIntro.SetText(IntroLabel());
 	
 }
 
 
-void OptionState::Render(){
+void OptionState::Render() {
 	
-	rectRed.Render(RED);
-	rectOrange.Render(ORANGE);
+	bg.Render();
+	bg2.Render(512 - bg2.GetWidth() / 2, 120);
 	txMute.Render();
 	txVolume.Render();
 	txPlus.Render();
 	txMinus.Render();
 	txReset.Render();
+	txIntro.Render();
 	txBack.Render();
 	
 }

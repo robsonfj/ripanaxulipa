@@ -1,23 +1,30 @@
-//
-//  CheatMode.h
-//  Ripa na Xulipa
-//
-//  Created by Robson Ferreira Jacomini on 15/06/14.
-//  Copyright (c) 2014 Robson Ferreira Jacomini. All rights reserved.
-//
 
+#ifndef __IDJ__CheatMode__
+#define __IDJ__CheatMode__
+
+#include "State.h"
 #include "Game.h"
 #include "MainCharacter.h"
+#include "ColorRect.h"
+#include "Text.h"
 
 
-class CheatMode{
+class CheatMode {
+
+private:
     string cheat;
-    
+	ColorRect rectwhite, rectred, rectShadow;
+	Text txInput;
+	
 public:
-    CheatMode(){};
-    ~CheatMode(){};
-    
-    void SetCheat(string cheat){this->cheat = cheat;};
+	bool cheatModeOn = false;
+	
+    CheatMode();
+    ~CheatMode() {};
     
     void Update();
+	void Render();
+	
 };
+
+#endif

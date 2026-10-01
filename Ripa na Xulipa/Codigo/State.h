@@ -7,7 +7,6 @@
 
 #include "GameObject.h"
 #include "Camera.h"
-#include "Collision.h"
 
 #define FONTE "arquivos/font/orangejuice.ttf"
 
@@ -29,10 +28,11 @@ typedef struct resultado {
 } Resultado;
 
 class State {
+
 protected:
 	bool requestDelete;
 	bool requestQuit;
-	SDL_Color padraoCor, padraoCorSelect;
+	SDL_Color padraoCor, padraoCorSelect, padraoCorSelect2;
 	
 	virtual void UpdateArray(float dt);
 	virtual void RenderArray();
@@ -40,18 +40,19 @@ protected:
 	
 public:
 	State();
-	virtual ~State(){};
+	virtual ~State() {};
 	
 	virtual void Update(float dt) = 0;
 	virtual void Render() = 0;
 	
-	virtual void AddObject(GameObject* object){objectArray.emplace_back(object);};
-	
-	bool RequestedDelete(){return requestDelete;};
-	bool RequestedQuit(){return requestQuit;};
+	virtual void AddObject(GameObject* object) { objectArray.emplace_back(object); };
+	bool RequestedDelete() { return requestDelete; };
+	bool RequestedQuit() { return requestQuit; };
 	State* nextState = NULL;
 	State* previousState = NULL;
 	std::vector<Resultado> resultados;
+    static int deletedpapercount;
 
 };
+
 #endif /* defined(__IDJ__State__) */

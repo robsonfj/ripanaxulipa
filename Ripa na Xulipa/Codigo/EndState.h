@@ -1,26 +1,21 @@
-//
-//  EndState.h
-//  Avenida Paulista
-//
-//  Created by Robson Ferreira Jacomini on 12/06/14.
-//
-//
+
 #ifndef __IDJ__EndState__
 #define __IDJ__EndState__
 
 #include "State.h"
+#include "Sprite.h"
 #include "Text.h"
+#include "Music.h"
 #include "ColorRect.h"
 
-class EndState: public State{
+class EndState : public State {
+
+private:
     void Input();
-	Text txNota;
-	Text txResultado;
-    Text txScore, txNscore;
-    Text txHighscore, txNhighscore;
-    Text txContinue, txRepeat;
-    
-    ColorRect rectRed;
+    int nrtxtselected = 0;
+	Text txNota, txScore, txNscore, txHighscore, txNhighscore, txMenu, txRepeat;
+    Music endMusic;
+	Sprite bg;
     
 public:
     EndState(bool win);

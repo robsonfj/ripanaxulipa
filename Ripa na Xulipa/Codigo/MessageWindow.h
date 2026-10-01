@@ -1,5 +1,4 @@
 
-
 #ifndef __IDJ__MessageWindow__
 #define __IDJ__MessageWindow__
 
@@ -7,26 +6,24 @@
 #include "Text.h"
 
 class MessageWindow : public State {
-	Sprite background;
-	Sprite buttonYes;
-	Sprite buttonNo;
-	Sprite buttonOk;
-	Text message;
+
+private:
+	Sprite bg, bg2, buttonOk, buttonYes, buttonNo;
+	Text message, txyes, txno, txok;
 	std::vector<Text> messages;
-	int type;
-	int cont = 0;
-	Rect boxOk;
-	Rect boxYes;
-	Rect boxNo;
+	int type, cont = 0;
 	Resultado auxResult;
+
 public:
-    MessageWindow(){};
+	Resultado result;
+
+    MessageWindow() {};
 	MessageWindow(int type, std::string message);
 	~MessageWindow();
 	void SetMessage(std::string message);
 	void Render();
 	void Update(float dt);
-	Resultado result;
+
 };
 
 #endif /* defined(__IDJ__MessageWindow__) */

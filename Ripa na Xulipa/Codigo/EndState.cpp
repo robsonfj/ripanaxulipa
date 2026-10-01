@@ -1,130 +1,136 @@
-//
-//  EndState.cpp
-//  Avenida Paulista
-//
-//  Created by Robson Ferreira Jacomini on 12/06/14.
-//
-//
 
 #include "EndState.h"
-#include "StageState.h"
+#include "LoadState.h"
 
-EndState::EndState(bool win){
+
+EndState::EndState(bool win) {
+
     std::stringstream s;
-    rectRed = *new ColorRect(0, 0, 1024, 600);
     
-	txNota = *new Text(FONTE, 50, Text::TEXT_BLENDED, "Nota: SR", padraoCor, 512, 150);
 	if (win) {
-		
+		bg = *new Sprite("arquivos/img/states/end/win.png");
+        endMusic = *new Music("arquivos/audio/Vitoria.mp3");
         s.str("");
-        if (MainCharacter::papers == 0) {
-            s << "Nota: SR";
-        }
-        else {
-            if (MainCharacter::papers > 0 && MainCharacter::papers < 18) {
-                s << "Nota: II";
-            }
-            else {
-                if (MainCharacter::papers >= 18 && MainCharacter::papers < 30) {
-                    s << "Nota: MI";
-                }
-                else {
-                    if (MainCharacter::papers >= 30 && MainCharacter::papers < 42) {
-                        s << "Nota: MM";
-                    }
-                    else {
-                        if (MainCharacter::papers >= 42 && MainCharacter::papers < 54) {
-                            s << "Nota: MS";
-                        }
-                        else {
-                            if (MainCharacter::papers >= 54) {
-                                s << "Nota: SS";
-                            }
-                        }
-                    }
-                }
-            }
-        }
-		txNota.SetText(s.str());
-
-		txResultado = *new Text(FONTE, 100, Text::TEXT_BLENDED, "Win!", padraoCor, 512, 280);
-        
+		s << Game::GetInstance().CalculateScore(MainCharacter::papers);
+		txNota = *new Text(FONTE, 50, Text::TEXT_BLENDED, s.str(), padraoCor, 505, 145);
+		txScore = *new Text(FONTE, 60, Text::TEXT_BLENDED, "Points", padraoCor, 120, 320);
+		txHighscore = *new Text(FONTE, 60, Text::TEXT_BLENDED, "High Score", padraoCor, 875, 320);
+		txNscore = *new Text(FONTE, 50, Text::TEXT_BLENDED, "0", padraoCor, 125, 380);
+		txNhighscore = *new Text(FONTE, 50, Text::TEXT_BLENDED, "0", padraoCor, 825, 380);
+		txMenu = *new Text(FONTE, 50, Text::TEXT_BLENDED, "Menu", padraoCor, 175, 540);
+		txRepeat = *new Text(FONTE, 50, Text::TEXT_BLENDED, "Repeat?", padraoCor, 835, 540);
 	}
 	else {
-		txResultado = *new Text(FONTE, 100, Text::TEXT_BLENDED, "Lose!", padraoCor, 512, 280);
+		bg = *new Sprite("arquivos/img/states/end/lose.png");
+		txNota = *new Text(FONTE, 50, Text::TEXT_BLENDED, "Nota: SR", padraoCor, 505, 155);
+		txScore = *new Text(FONTE, 60, Text::TEXT_BLENDED, "Points", padraoCor, 120, 320);
+		txHighscore = *new Text(FONTE, 60, Text::TEXT_BLENDED, "High Score", padraoCor, 875, 320);
+		txNscore = *new Text(FONTE, 50, Text::TEXT_BLENDED, "0", padraoCor, 125, 380);
+		txNhighscore = *new Text(FONTE, 50, Text::TEXT_BLENDED, "0", padraoCor, 825, 380);
+		txMenu = *new Text(FONTE, 50, Text::TEXT_BLENDED, "Menu", padraoCor, 130, 525);
+		txRepeat = *new Text(FONTE, 50, Text::TEXT_BLENDED, "Repeat?", padraoCor, 860, 525);
 	}
-    
-    txScore = *new Text(FONTE, 60, Text::TEXT_BLENDED, "Points", padraoCor, 150, 250);
-    txHighscore = *new Text(FONTE, 60, Text::TEXT_BLENDED, "High Score", padraoCor, 850, 250);
-    
-    txNscore = *new Text(FONTE, 50, Text::TEXT_BLENDED, "0", padraoCor, 150, 320);
-    txNhighscore = *new Text(FONTE, 50, Text::TEXT_BLENDED, "0", padraoCor, 800, 320);
-    
-    txContinue = *new Text(FONTE, 50, Text::TEXT_BLENDED,"Menu", padraoCor, 512, 380);
-    txRepeat = *new Text(FONTE, 50, Text::TEXT_BLENDED,"Repeat?", padraoCor, 512, 450);
     
 }
 
-void EndState::Input(){
+
+void EndState::Input() {
+    
+//	Se o cursor estiver se movendo, desabilita selecao pelo teclado
+	if (InputManager::GetInstance().mouseMoving) {
+		nrtxtselected = -1;
+	}
+    
+//	Habilita a selecao das opcoes pelo teclado
+    if (InputManager::GetInstance().KeyPress(UP_ARROW_KEY)) {
+        nrtxtselected -= 1;
+		if (nrtxtselected < 0) {
+			nrtxtselected = 2;
+		}
+    }
+    if (InputManager::GetInstance().KeyPress(DOWN_ARROW_KEY)) {
+        nrtxtselected += 1;
+		if (nrtxtselected > 1) {
+			nrtxtselected = 0;
+		}
+    }
     
 //  Se a tecla for ESC, setar a flag para deletar esse estado
-    if((InputManager::GetInstance().KeyPress(ESCAPE_KEY))){
+    if ((InputManager::GetInstance().KeyPress(ESCAPE_KEY))) {
+        endMusic.Stop();
         requestDelete = true;
     }
     
-//	se condicao de saida for atendido
-    if(InputManager::GetInstance().ShouldQuit())
-        requestQuit = true;
+//	Se a condicao de saida for atendida
+	if (InputManager::GetInstance().ShouldQuit()) {
+		requestQuit = true;
+	}
     
-//	mudar a Cor do texto e se ele for clicado entra na tela correspondente
-    if (InputManager::GetInstance().IsMouseInside(txContinue.box)) {
-        
-        txContinue.SetColor(padraoCorSelect);
-        if(InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON)){
+//	Verifica se esta selecionado e se foi clicado
+    if (InputManager::GetInstance().IsMouseInside(txMenu.box) || nrtxtselected == 0) {
+        txMenu.selected = true;
+        txMenu.SetColor(padraoCorSelect);
+        if (InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON)|| InputManager::GetInstance().KeyPress(ENTER_KEY)) {
+            endMusic.Stop();
             requestDelete = true;
         }
     }
-    else
-        txContinue.SetColor(padraoCor);
+    else {
+        if (txMenu.selected) {
+            txMenu.selected = false;
+            txMenu.SetColor(padraoCor);
+        }
+    }
     
-//	mudar a Cor do texto e se ele for clicado entra na tela correspondente
-    if (InputManager::GetInstance().IsMouseInside(txRepeat.box)) {
-        
+//	Verifica se esta selecionado e se foi clicado
+    if (InputManager::GetInstance().IsMouseInside(txRepeat.box) || nrtxtselected == 1) {
+        txRepeat.selected = true;
         txRepeat.SetColor(padraoCorSelect);
-        if(InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON)){
+        if (InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON)|| InputManager::GetInstance().KeyPress(ENTER_KEY)) {
             requestDelete = true;
-            Game::GetInstance().Push(new StageState);
+            endMusic.Stop();
+            Game::GetInstance().Push(new LoadState);
         }
     }
-    else
-        txRepeat.SetColor(padraoCor);
+    else {
+        if (txRepeat.selected) {
+            txRepeat.selected = false;
+            txRepeat.SetColor(padraoCor);
+        }
+    }
     
 }
 
 
 void EndState::Update(float dt) {
+
     std::stringstream s;
+
     Input();
     
+	if (!endMusic.IsPlaying()) {
+		endMusic.Play(-1);
+	}
+    
     s.str("");
-    s <<MainCharacter::plpoints;
+    s << MainCharacter::plpoints;
     txNscore.SetText(s.str());
     s.str("");
-    s <<Game::GetInstance().GetHighScore();
+    s << Game::GetInstance().GetHighScore();
     txNhighscore.SetText(s.str());
+
 }
 
 
-void EndState::Render(){
+void EndState::Render() {
     
-    rectRed.Render(1);// passa 1 para definir a cor vermelha
+    bg.Render();
 	txNota.Render();
-	txResultado.Render();
     txScore.Render();
     txHighscore.Render();
     txNscore.Render();
     txNhighscore.Render();
-    txContinue.Render();
+    txMenu.Render();
     txRepeat.Render();
     
 }

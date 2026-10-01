@@ -1,5 +1,4 @@
 
-
 #ifndef __Avenida_Paulista__OptionState__
 #define __Avenida_Paulista__OptionState__
 
@@ -11,12 +10,15 @@
 #include "Music.h"
 #include "MessageWindow.h"
 
-class OptionState: public State{
-	void Input();
-	Sprite bg;
-	ColorRect rectRed, rectOrange;
-	Text txMute, txPlus, txMinus, txVolume, txBack, txReset;
+class OptionState : public State {
+
+private: 
+	int nrtxtselected = 0;
+	Sprite bg, bg2;
+	Text txMute, txPlus, txMinus, txVolume, txBack, txReset, txIntro;
 	Music music;
+
+	void Input();
 	
 public:
 	OptionState();
@@ -24,4 +26,5 @@ public:
 	void Render();
 	
 };
+
 #endif /* defined(__Avenida_Paulista__OptionState__) */

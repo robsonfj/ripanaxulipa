@@ -2,14 +2,14 @@
 #ifndef __IDJ__InputManager__
 #define __IDJ__InputManager__
 
-#include <iostream>
-#include <SDL.h>
+#include <sstream>
+#include <string>
+#include <SDL2/SDL.h>
 #include <unordered_map>
 
 #include "Rect.h"
 
 #define N_MOUSEKEYS 5
-
 #define LEFT_ARROW_KEY SDLK_LEFT
 #define RIGHT_ARROW_KEY SDLK_RIGHT
 #define UP_ARROW_KEY SDLK_UP
@@ -24,35 +24,37 @@
 #define A_KEY SDLK_a
 #define D_KEY SDLK_d
 
-class InputManager{
-	InputManager();
-	~InputManager(){};
-	
+class InputManager {
+
+private:
 	enum InputState{
 		RELEASED, JUST_RELEASED,
 		PRESSED, JUST_PRESSED
 	};
+	bool quitGame = false;
+	int mouseX, mouseY;
 	InputState mouseState[N_MOUSEKEYS];
 	std::unordered_map<int, InputState> keyState;
-	bool quitGame = false;
-	int mouseX;
-	int mouseY;
+
+	InputManager();
+	~InputManager() {};
 	
 public:
+	std::stringstream inputTexto;
 	
-	void Update ();
-	bool KeyPress (int key);
-	bool KeyRelease (int key);
-	bool IsKeyDown (int key);
-	bool MousePress (int button);
-	bool MouseRelease (int button);
-	bool IsMouseDown (int button);
-	bool IsMouseInside (Rect rect);
-	bool ShouldQuit (){return quitGame;};
+	void Update();
+	bool KeyPress(int key);
+	bool KeyRelease(int key);
+	bool IsKeyDown(int key);
+	bool MousePress(int button);
+	bool MouseRelease(int button);
+	bool IsMouseDown(int button);
+	bool IsMouseInside(Rect rect);
+	bool ShouldQuit() { return quitGame; };
 	bool mouseMoving = false;
-	int GetMouseX (){return mouseX;};
-	int GetMouseY (){return mouseY;};
-	
+	int GetMouseX() { return mouseX; };
+	int GetMouseY() { return mouseY; };
+	std::string Text();
 	static InputManager& GetInstance();
 	
 };
