@@ -73,10 +73,14 @@ void InputManager::Update() {
 				}
 				break;				
 			case SDL_MOUSEBUTTONDOWN:				
-				mouseState[event.button.button] = JUST_PRESSED;
+				if (event.button.button >= 0 && event.button.button < N_MOUSEKEYS) {
+					mouseState[event.button.button] = JUST_PRESSED;
+				}
 				break;				
 			case SDL_MOUSEBUTTONUP:				
-				mouseState[event.button.button] = JUST_RELEASED;
+				if (event.button.button >= 0 && event.button.button < N_MOUSEKEYS) {
+					mouseState[event.button.button] = JUST_RELEASED;
+				}
 				break;                
             case SDL_MOUSEMOTION:
 //		So conta como movimento se saiu do lugar (>2px): evita que
