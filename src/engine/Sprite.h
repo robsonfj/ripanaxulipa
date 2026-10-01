@@ -16,13 +16,16 @@ using std::string;
 class Sprite {
 
 private:
-	float frameCount;
-	float currentFrame;
+	float frameCount = 1;
+	float currentFrame = 1;
 	Timer timeElapsed;
-	float frameTime;
+	float frameTime = 1;
 	float scaleX = 1;
 	float scaleY= 1;
     float alpha = 1;
+//	Fracao util da textura (1.0 normal; <1.0 quando o driver exigiu
+//	padding power-of-two — ver core/TextureUpload.h).
+	float texU = 1.0f, texV = 1.0f;
 	GLuint *texturegl;
     SDL_sem *semaphore;
 	Rect dimensions, clipRect;
@@ -40,6 +43,8 @@ public:
 	int GetWidth() { return dimensions.w * scaleX / frameCount; };
 	int GetHeight() { return dimensions.h * scaleY / frameCount; };
 	GLuint *GetTexture() { return texturegl; };
+	float GetTexU() const { return texU; };
+	float GetTexV() const { return texV; };
 	
 	void SetClip(float x, float y, float w, float h);
 	void SetFrame(int frame) { currentFrame = frame; SetClip((currentFrame - 1) / frameCount, 1, dimensions.w / frameCount, dimensions.h); };

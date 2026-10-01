@@ -1,6 +1,7 @@
 // Text.cpp - texto via SDL_ttf com cache de fontes, renderizado como textura.
 
 #include "Text.h"
+#include "TextureUpload.h"
 
 #include <cstring> // memcpy (reempacotamento de pitch)
 #include "Sync.h"
@@ -53,7 +54,8 @@ void Text::Render(int cameraX, int cameraY) {
 	
 	glPushMatrix();
 
-//	Tipo de primitiva com quatro vertices
+//	Tipo de primitiva com quatro vertices (texU/texV = 1 em driver
+//	normal; <1 quando houve padding POT — ver TextureUpload.h).
 	glBegin(GL_QUADS);
 
 //  Ponto superior esquerdo
@@ -61,15 +63,15 @@ void Text::Render(int cameraX, int cameraY) {
 	glVertex2f(box.x, box.y);
 
 //  Ponto superior direito
-	glTexCoord2f(1, 0);
+	glTexCoord2f(texU, 0);
 	glVertex2f(box.x + box.w, box.y);
 
 //  Ponto inferior direito
-	glTexCoord2f(1, 1);
+	glTexCoord2f(texU, texV);
 	glVertex2f(box.x + box.w, box.y + box.h);
 	
 //  Ponto inferior esquerdo
-	glTexCoord2f(0, 1);
+	glTexCoord2f(0, texV);
 	glVertex2f(box.x, box.y + box.h);
 	glEnd();
 	glPopMatrix();
@@ -160,40 +162,35 @@ void Text::RemakeTexture() {
 	
     
     glBindTexture(GL_TEXTURE_2D, *texturegl);
-//  Parametros de filtragem da textura
+//  Parametros de filtragem da textura (GL 1.x em todo lugar).
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-#ifndef _WIN32
-    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-#endif
     
     // TTF_Render* retorna formatos variados (8-bit paletizado no SOLID,
     // 32-bit ARGB no BLENDED). Converte para ABGR8888 (memoria R,G,B,A)
-    // e sobe como GL_RGBA — corrige "xiado" no Windows.
+    // e sobe como GL_RGBA.
     int modo = GL_RGBA;
-    int internalFormat = GL_RGBA;
     SDL_Surface* conv = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_ABGR8888, 0);
     if (conv) {
         SDL_FreeSurface(surface);
         surface = conv;
     }
-   
-//  Constroi a textura (reempacota se houver padding no pitch)
- 	int bpp = surface->format->BytesPerPixel;
- 	unsigned char* tightBuf = nullptr;
- 	unsigned char* pixels = (unsigned char*)surface->pixels;
- 	if (surface->pitch != surface->w * bpp) {
- 		tightBuf = new unsigned char[(size_t)surface->w * surface->h * bpp];
- 		for (int y = 0; y < surface->h; y++) {
- 			memcpy(tightBuf + (size_t)y * surface->w * bpp,
- 				   (unsigned char*)surface->pixels + (size_t)y * surface->pitch,
- 				   (size_t)surface->w * bpp);
- 		}
- 		pixels = tightBuf;
- 	}
+
+//  Upload via helper central (POT para drivers 1.1 + reempacota pitch).
+	int upW = 0, upH = 0;
+	float uScale = 1.0f, vScale = 1.0f;
+	unsigned char* pixels = RipaPreparePixels(surface, upW, upH, uScale, vScale);
+	bool owned = (pixels != nullptr);
+	if (!owned) {
+		pixels = (unsigned char*)surface->pixels;
+	}
+	texU = uScale;
+	texV = vScale;
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, surface->w, surface->h, 0, modo, GL_UNSIGNED_BYTE, pixels);
- 	delete[] tightBuf;
+	glTexImage2D(GL_TEXTURE_2D, 0, RipaInternalFormat(surface), upW, upH, 0, modo, GL_UNSIGNED_BYTE, pixels);
+	if (owned) {
+		delete[] pixels;
+	}
     
 	box.w = surface->w;
 	box.h = surface->h;

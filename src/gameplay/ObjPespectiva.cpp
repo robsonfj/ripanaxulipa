@@ -91,19 +91,19 @@ void ObjPespectiva::Render() {
     glBegin(GL_QUADS);
 
 //	Ponto superior esquerdo
-    glTexCoord4f(0, -2, 0, escala);
+    glTexCoord4f(0, -2 * sp.GetTexV(), 0, escala);
     glVertex2f(box2.x, box2.y);
     
 //	Ponto superior direito
-    glTexCoord4f(escala, -2, 0, escala);
+    glTexCoord4f(escala * sp.GetTexU(), -2 * sp.GetTexV(), 0, escala);
     glVertex2f( box2.x + box2.w, box2.y);
     
 //	Ponto inferior direito
-    glTexCoord4f(1, 1, 0, 1);
+    glTexCoord4f(sp.GetTexU(), sp.GetTexV(), 0, 1);
     glVertex2f(box.x+ box.w, box.y+box.h);
     
 //	Ponto inferior esquerdo
-    glTexCoord4f(0, 1, 0, 1);
+    glTexCoord4f(0, sp.GetTexV(), 0, 1);
     glVertex2f(box.x, box.y+box.h);
     glEnd();
     

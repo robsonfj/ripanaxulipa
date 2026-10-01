@@ -59,15 +59,15 @@ void RoadSegment::Render(Sprite spRoad) {
 	glVertex2f(screenRect2.x - screenRect2.w, screenRect2.y);
 	
 //  Ponto superior direito
-	glTexCoord4f(escala, 0, 0, escala);
+	glTexCoord4f(escala * spRoad.GetTexU(), 0, 0, escala);
 	glVertex2f( screenRect2.x + screenRect2.w, screenRect2.y);
 	
 //  Ponto inferior direito
-	glTexCoord4f(1, 1, 0, 1);
+	glTexCoord4f(spRoad.GetTexU(), spRoad.GetTexV(), 0, 1);
 	glVertex2f( screenRect1.x + screenRect1.w, screenRect1.y);
 	
 //  Ponto inferior esquerdo
-	glTexCoord4f(0, 1, 0, 1);
+	glTexCoord4f(0, spRoad.GetTexV(), 0, 1);
 	glVertex2f(screenRect1.x - screenRect1.w, screenRect1.y);
 	
 }

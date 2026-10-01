@@ -6,19 +6,19 @@
 MessageWindow::MessageWindow(int type, std::string message) {
 
 	// Carrega backgrounds
-	bg = Sprite::Sprite("arquivos/img/states/Pattern.jpg");
-	bg2 = Sprite::Sprite("arquivos/img/states/messagewindow/messagebg.png");
+	bg = Sprite("arquivos/img/states/Pattern.jpg");
+	bg2 = Sprite("arquivos/img/states/messagewindow/messagebg.png");
 
 	// Inicializa as sprites e os textos
 	this->type = type;
 	if (type == 1) {
-		buttonOk = Sprite::Sprite("arquivos/img/states/messagewindow/buttonbg.png");
+		buttonOk = Sprite("arquivos/img/states/messagewindow/buttonbg.png");
 		txok = *new Text(FONTE, 50, Text::TEXT_BLENDED, "OK", padraoCor, 508, 410);
 	}
 	else {
-		buttonYes = Sprite::Sprite("arquivos/img/states/messagewindow/buttonbg.png");
+		buttonYes = Sprite("arquivos/img/states/messagewindow/buttonbg.png");
 		txyes = *new Text(FONTE, 50, Text::TEXT_BLENDED, "YES", padraoCor, 360, 410);
-		buttonNo = Sprite::Sprite("arquivos/img/states/messagewindow/buttonbg.png");
+		buttonNo = Sprite("arquivos/img/states/messagewindow/buttonbg.png");
 		txno = *new Text(FONTE, 50, Text::TEXT_BLENDED, "NO", padraoCor, 658, 410);
 	}
 

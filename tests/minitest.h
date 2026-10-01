@@ -15,6 +15,8 @@
 #pragma once
 
 #include <cmath>
+#include <csignal>
+#include <cstdio>
 #include <functional>
 #include <iostream>
 #include <sstream>
@@ -63,6 +65,32 @@ std::string ToStr(const T& v) {
 }
 
 // Roda todos os testes e retorna o numero de falhas (0 = ok).
+// Instala antes um handler de crash (SIGSEGV/SIGABRT/SIGFPE/SIGILL)
+// que imprime EM QUAL teste morreu — essencial no CI, onde nao ha
+// debugger (usa signal() ANSI: vale no Linux/macOS/Windows-MSVC).
+inline void CrashHandler(int sig) {
+    const char* name = "sinal desconhecido";
+    if (sig == SIGSEGV) {
+        name = "SIGSEGV (acesso invalido)";
+    }
+    else if (sig == SIGABRT) {
+        name = "SIGABRT (abort)";
+    }
+    else if (sig == SIGFPE) {
+        name = "SIGFPE (aritmetica)";
+    }
+    else if (sig == SIGILL) {
+        name = "SIGILL (instrucao ilegal)";
+    }
+    std::fprintf(stderr, "CRASH %s em %s (ultimo teste ativo)\n", name,
+                 CurrentTest().c_str());
+    std::fflush(stderr);
+    // Restaura o default e re-levanta: sem isso, abort() voltaria para
+    // ca em loop (SIGABRT gera SIGABRT de novo).
+    std::signal(sig, SIG_DFL);
+    std::raise(sig);
+}
+
 inline int RunAll() {
     int failedTests = 0;
     int totalTests = 0;
@@ -133,4 +161,10 @@ inline int RunAll() {
 
 // Gera o main() padrao de cada executavel de teste.
 #define MINITEST_MAIN()                                                        \
-    int main() { return ::minitest::RunAll(); }
+    int main() {                                                               \
+        std::signal(SIGSEGV, ::minitest::CrashHandler);                        \
+        std::signal(SIGABRT, ::minitest::CrashHandler);                        \
+        std::signal(SIGFPE, ::minitest::CrashHandler);                         \
+        std::signal(SIGILL, ::minitest::CrashHandler);                         \
+        return ::minitest::RunAll();                                           \
+    }

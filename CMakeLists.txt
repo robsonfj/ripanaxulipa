@@ -93,12 +93,18 @@ target_link_libraries(ripalib PUBLIC
     SDL2_ttf::SDL2_ttf
 )
 # OpenGL legacy por plataforma (o jogo usa immediate mode 1.x).
+# Threads: std::mutex/condition do Sync.h exigem pthread no Linux/macOS;
+# libm: cos/sin/sqrt/pow usados em Point/Rect.
 if(WIN32)
     target_link_libraries(ripalib PUBLIC opengl32 winmm version imm32)
-elseif(APPLE)
-    target_link_libraries(ripalib PUBLIC "-framework OpenGL")
 else()
-    target_link_libraries(ripalib PUBLIC GL)
+    find_package(Threads REQUIRED)
+    target_link_libraries(ripalib PUBLIC Threads::Threads m)
+    if(APPLE)
+        target_link_libraries(ripalib PUBLIC "-framework OpenGL")
+    else()
+        target_link_libraries(ripalib PUBLIC GL)
+    endif()
 endif()
 
 add_executable(RipaNaXulipa "${SRC_DIR}/main.cpp")
@@ -114,18 +120,17 @@ add_custom_command(TARGET RipaNaXulipa POST_BUILD
 )
 
 # DLLs runtime no Windows (vindo do vcpkg applocal ou dos -devel baixados).
-if(WIN32)
-    if(DEFINED VCPKG_INSTALLED_DIR)
-        # vcpkg copia via applocal automaticamente.
-    elseif(RIPA_SDL_DLLS)
-        foreach(_dll IN LISTS RIPA_SDL_DLLS)
-            add_custom_command(TARGET RipaNaXulipa POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                    "${_dll}" "$<TARGET_FILE_DIR:RipaNaXulipa>"
-                COMMENT "Copiando ${_dll}")
-        endforeach()
-    endif()
-endif()
+# Nos testes tambem: o loader do Windows so procura na pasta do exe.
+function(ripa_bundle_sdl_dlls TARGET)
+  if(WIN32 AND RIPA_SDL_DLLS)
+    foreach(_dll IN LISTS RIPA_SDL_DLLS)
+      add_custom_command(TARGET ${TARGET} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          "${_dll}" "$<TARGET_FILE_DIR:${TARGET}>")
+    endforeach()
+  endif()
+endfunction()
+ripa_bundle_sdl_dlls(RipaNaXulipa)
 
 if(RIPA_ENABLE_TESTS)
     include(CTest)

@@ -74,15 +74,15 @@ void Buildings::Render() {
 	glVertex2f(box1.x + box1.w, box1.y - sp1.GetHeight());
 	
 //	Ponto superior direito
-	glTexCoord4f(1, 0, 0, 1);
+	glTexCoord4f(sp1.GetTexU(), 0, 0, 1);
 	glVertex2f( box1.x + sp1.GetWidth()  + box1.w, box1.y - sp1.GetHeight());
 	
 //	Ponto inferior direito
-	glTexCoord4f(1, 1, 0, 1);
+	glTexCoord4f(sp1.GetTexU(), sp1.GetTexV(), 0, 1);
 	glVertex2f( box1.x + sp1.GetWidth() + box1.w, box1.y);
 	
 //	Ponto inferior esquerdo
-	glTexCoord4f(0, 1, 0, 1);
+	glTexCoord4f(0, sp1.GetTexV(), 0, 1);
 	glVertex2f(box1.x + box1.w, box1.y);
 	glEnd();
 	
@@ -94,15 +94,15 @@ void Buildings::Render() {
 	glVertex2f( box2.x + box2.w, box2.y - sp2.GetHeight());
 	
 //	Ponto superior direito
-	glTexCoord4f(escala, 0, 0, escala);
+	glTexCoord4f(escala * sp2.GetTexU(), 0, 0, escala);
 	glVertex2f( box1.x + box1.w + box.w, box1.y - sp1.GetHeight());
 	
 //	Ponto inferior direito
-	glTexCoord4f(escala, escala, 0, escala);
+	glTexCoord4f(escala * sp2.GetTexU(), escala * sp2.GetTexV(), 0, escala);
 	glVertex2f( box1.x + box1.w + box.w, box1.y );
 	
 //	Ponto inferior esquerdo
-	glTexCoord4f(0, 1, 0, 1);
+	glTexCoord4f(0, sp2.GetTexV(), 0, 1);
 	glVertex2f( box2.x + box2.w, box2.y );
 	glEnd();
     glPopMatrix();

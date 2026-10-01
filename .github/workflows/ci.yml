@@ -8,7 +8,9 @@
 name: CI
 
 on:
-  push:
+  push: 
+    branches:
+      - main
   pull_request:
 
 jobs:
@@ -61,13 +63,12 @@ jobs:
           cmake --build build-cov -j
           xvfb-run -a ctest --test-dir build-cov --output-on-failure
           lcov --capture --directory build-cov --output-file coverage.info \
-            --ignore-errors mismatch --rc branch_coverage=1
+            --rc branch_coverage=1
           lcov --remove coverage.info '/usr/*' '*/tests/*' '*/_deps/*' '*/build-cov/*' \
             --output-file coverage.info --ignore-errors unused
           lcov --list coverage.info
           mkdir -p coverage-html
-          genhtml coverage.info --output-directory coverage-html \
-            --ignore-errors unmapped,unused
+          genhtml coverage.info --output-directory coverage-html
 
       - name: Publicar cobertura
         if: runner.os == 'Linux'

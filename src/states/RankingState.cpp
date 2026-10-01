@@ -18,7 +18,7 @@ RankingState::RankingState() : bg("arquivos/img/states/Pattern.jpg"), bg2("arqui
 	fp = fopen("arquivos/save/highscores.txt", "r");
 	if (fp != NULL) {
 		while (tam < 10 && fscanf(fp, "%d", &scores[tam].score) > 0) {
-			fscanf(fp, "%d", &scores[tam].papers); // pega papers
+			(void)fscanf(fp, "%d", &scores[tam].papers); // pega papers
 			getc(fp); // pega "\n"
 			tam++;
 		}

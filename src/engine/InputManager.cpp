@@ -91,8 +91,10 @@ void InputManager::Update() {
                 inputTexto<<event.text.text;
                 break;
 		}		      
-//      Evento de redimensionamento da tela
-        if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+//      Evento de redimensionamento da tela (so quando for evento de janela:
+//		ler event.window de outro tipo de evento e lixo e ainda chama o
+//		Game sem existir instancia -> crash).
+        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
             SDL_Log("\nWindow resized to %dx%d\n",event.window.data1, event.window.data2);
             Game::GetInstance().SetWindowWidth(event.window.data1);
             Game::GetInstance().SetWindowHeight(event.window.data2);

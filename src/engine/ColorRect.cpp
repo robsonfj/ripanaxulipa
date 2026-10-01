@@ -16,7 +16,7 @@ ColorRect::ColorRect(float x, float y , float w, float h) {
 
 void ColorRect::Render(int cor, float alpha) {
     
-    glBindTexture(GL_TEXTURE_2D, NULL);
+    glBindTexture(GL_TEXTURE_2D, 0);
     
     switch (cor) {
         case RED:

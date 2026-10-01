@@ -69,7 +69,7 @@ Game::Game(string title, int width, int height) {
 	}
 	else {
 		int stored = 0;
-		fscanf(fp, "%d", &stored);
+		(void)fscanf(fp, "%d", &stored);
 		fclose(fp);
 	}
 
@@ -83,7 +83,7 @@ Game::Game(string title, int width, int height) {
 		}
 	}
 	else {
-		fscanf(fp, "%d", &highScore);
+		(void)fscanf(fp, "%d", &highScore);
 		fclose(fp);
 	}
 
@@ -210,7 +210,7 @@ int Game::GetHighScore() {
     FILE* fp;
     fp = fopen("arquivos/save/highscores.txt", "r");
 	if (fp != NULL) {
-		fscanf(fp, "%d", &highScore); // Le o primeiro valor (o maior, porque o arquivo esta ordenado)
+		(void)fscanf(fp, "%d", &highScore); // Le o primeiro valor (o maior, porque o arquivo esta ordenado)
 		fclose(fp);
 	}
 	return highScore;
@@ -224,7 +224,7 @@ int Game::GetCoins() {
     int value = 0;
     fp = fopen("arquivos/save/coins.txt", "r");
 	if (fp != NULL) {
-		fscanf(fp, "%d", &value);
+		(void)fscanf(fp, "%d", &value);
 		fclose(fp);
 	}
 	return value;
@@ -284,7 +284,7 @@ void Game::AddToRanking(int score, int papers) {
 	fp = fopen("arquivos/save/highscores.txt", "r");
 	if (fp != NULL) {
 		while (tam < 10 && fscanf(fp, "%d", &scores[tam].score) > 0) {
-			fscanf(fp, "%d", &scores[tam].papers); // pega papers
+			(void)fscanf(fp, "%d", &scores[tam].papers); // pega papers
 			getc(fp); // pega "\n"
 			tam++;
 		}

@@ -22,6 +22,7 @@ foreach(suite engine game media assets_gl input)
     target_compile_definitions(test_${suite} PRIVATE
         RIPATEST_ASSETS_DIR="${RIPA_TEST_ASSETS}")
     add_test(NAME ${suite} COMMAND test_${suite})
+    ripa_bundle_sdl_dlls(test_${suite})
 endforeach()
 
 # test_game manipula arquivos relativos: roda num CWD proprio e limpo.

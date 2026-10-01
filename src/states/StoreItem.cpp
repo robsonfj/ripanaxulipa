@@ -7,8 +7,8 @@ StoreItem::StoreItem(std::string file, std::string description, int value, int i
 
     padraoCor.r = padraoCor.g = padraoCor.b = 0;
 	background = *new Sprite("arquivos/img/states/store/itembg.png");
-	item = Sprite::Sprite(file);
-	this->description = Sprite::Sprite(description);
+	item = Sprite(file);
+	this->description = Sprite(description);
 	intValue = value;
 	snprintf(auxTxValue, sizeof(auxTxValue), "$ %d", intValue);
 	this->value = *new Text(FONTE, 50, Text::TEXT_BLENDED, auxTxValue, padraoCor, 80, 50);

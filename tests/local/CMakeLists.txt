@@ -14,3 +14,4 @@
 add_executable(test_boot_states test_boot_states.cpp)
 target_link_libraries(test_boot_states PRIVATE ripalib)
 # SDL_MAIN_HANDLED no fonte: main() proprio, sem SDL2main.
+ripa_bundle_sdl_dlls(test_boot_states)

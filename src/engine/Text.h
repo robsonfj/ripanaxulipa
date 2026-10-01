@@ -28,13 +28,15 @@ public:
 
 private:
     string tempText = "";
-	TTF_Font* font;
+	TTF_Font* font = nullptr;
 	GLuint* texturegl = NULL;
 	SDL_Surface *surface = NULL;
 	string fontFile, text;
-	TextStyle style;
-	int fontSize;
-	SDL_Color color;
+	TextStyle style = TEXT_BLENDED;
+	int fontSize = 0;
+	SDL_Color color = {0, 0, 0, 0};
+//	Fracao util da textura (POT em drivers 1.1: ver TextureUpload.h).
+	float texU = 1.0f, texV = 1.0f;
 	static std::unordered_map<std::string, TTF_Font*> assetTable;
 
 };

@@ -6,7 +6,7 @@
 Money::Money(int value) {
 
 	padraoCor.r = padraoCor.g = padraoCor.b = 0;
-	coins = Sprite::Sprite("arquivos/img/states/store/coins.png");
+	coins = Sprite("arquivos/img/states/store/coins.png");
 	snprintf(auxTxValue, sizeof(auxTxValue), "$ %d", value);
 	this->value = *new Text(FONTE, 50, Text::TEXT_BLENDED, auxTxValue, padraoCor, 80, 50);
 
